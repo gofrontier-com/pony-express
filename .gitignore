@@ -1,0 +1,10 @@
+# ide
+.env
+.vscode
+config.yaml
+
+# go
+/pony
+
+# other
+dist/
