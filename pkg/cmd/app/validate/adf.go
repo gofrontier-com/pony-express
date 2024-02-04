@@ -1,16 +1,17 @@
 package validate
 
 import (
-	"fmt"
-
+	"github.com/common-nighthawk/go-figure"
 	"github.com/gofrontier-com/go-utils/output"
-	"github.com/gofrontier-com/pony-express/pkg/core/adf"
 	adfutil "github.com/gofrontier-com/pony-express/pkg/util/adf"
 )
 
 func ValidateADF(adfDir string, configFile string, subscriptionid string, resourceGroup string, factoryName string) error {
+	myFigure := figure.NewFigure("Pony Express", "doom", true)
+	myFigure.Print()
+
 	output.PrintlnfInfo("Loading and validating ADF source from %s", adfDir)
-	output.PrintlnfInfo("Loading and validating ADF config from %s", configFile)
+	output.PrintlnfInfo("Loading and validating ADF config from %s\n", configFile)
 
 	sourceAdf, err := adfutil.LoadMap(adfDir, subscriptionid, resourceGroup, factoryName)
 	if err != nil {
@@ -26,27 +27,7 @@ func ValidateADF(adfDir string, configFile string, subscriptionid string, resour
 
 	sourceAdf.SetDeploymentConfig(&cfg.Deploy)
 
-	targetAdf, err := adf.Fetch(subscriptionid, resourceGroup, factoryName)
-	if err != nil {
-		return err
-	}
-
-	sourceAdf.Diff(targetAdf)
-
-	err = sourceAdf.Deps()
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("To deploy pipelines:")
-	for _, i := range sourceAdf.Pipeline {
-		if i.RequiresDeployment && i.ConfiguredForDeployment {
-			fmt.Printf("- %s\n", *i.Pipeline.Name)
-			for _, j := range i.Dependencies {
-				fmt.Printf("  - %s\n", *j.Name)
-			}
-		}
-	}
+	output.PrintlnfInfo("Valid")
 
 	return nil
 }

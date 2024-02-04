@@ -46,22 +46,26 @@ func compareCredentials(source []*PonyCredential, target []*PonyCredential) {
 		t, err := findMatchingTargetCredential(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.Credential, t.Credential); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetCredential(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -80,22 +84,26 @@ func compareIntegrationRuntimes(source []*PonyIntegrationRuntime, target []*Pony
 		t, err := findMatchingTargetIntegrationRuntime(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.IntegrationRuntime, t.IntegrationRuntime); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetIntegrationRuntime(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -114,22 +122,26 @@ func compareLinkedServices(source []*PonyLinkedService, target []*PonyLinkedServ
 		t, err := findMatchingTargetLinkedService(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.LinkedService, t.LinkedService); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetLinkedService(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -148,22 +160,26 @@ func compareManagedVirtualNetworks(source []*PonyManagedVirtualNetwork, target [
 		t, err := findMatchingTargetManagedVirtualNetwork(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.ManagedVirtualNetwork, t.ManagedVirtualNetwork); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
-				if filterRemoteProps(prop) {
-					haschanges = true
+				if filterRemoteProps(prop, "Properties") {
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetManagedVirtualNetwork(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -182,22 +198,26 @@ func compareManagedPrivateEndpoints(source []*PonyManagedPrivateEndpoint, target
 		t, err := findMatchingTargetManagedPrivateEndpoint(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.ManagedPrivateEndpoint, t.ManagedPrivateEndpoint); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
-				if filterRemoteProps(prop) {
-					haschanges = true
+				if filterRemoteProps(prop, "Properties.AdditionalProperties", "Properties.ConnectionState", "Properties.Fqdns", "Properties.ProvisioningState") {
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetManagedPrivateEndpoint(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -216,22 +236,26 @@ func compareDatasets(source []*PonyDataset, target []*PonyDataset) {
 		t, err := findMatchingTargetDataset(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.Dataset, t.Dataset); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetDataset(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -250,22 +274,26 @@ func compareTriggers(source []*PonyTrigger, target []*PonyTrigger) {
 		t, err := findMatchingTargetTrigger(s, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.Trigger, t.Trigger); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetTrigger(t, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }
@@ -285,22 +313,27 @@ func comparePipelines(source []*PonyPipeline, target []*PonyPipeline) {
 		t, err := findMatchingTargetPipeline(s.Pipeline.Name, target)
 		if err != nil {
 			s.RequiresDeployment = true
+			s.ChangeType = Add
 			continue
 		}
-
-		haschanges := false
 
 		if diff := deep.Equal(s.Pipeline, t.Pipeline); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
 				if filterRemoteProps(prop) {
-					haschanges = true
+					s.RequiresDeployment = true
+					s.ChangeType = Update
 				}
 			}
 		}
+	}
 
-		if haschanges {
-			s.RequiresDeployment = true
+	for _, t := range target {
+		_, err := findMatchingTargetPipeline(t.Pipeline.Name, source)
+		if err != nil {
+			t.RequiresDeployment = true
+			// t.ConfiguredForDeployment = true
+			t.ChangeType = Remove
 		}
 	}
 }

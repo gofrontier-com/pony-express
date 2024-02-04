@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofrontier-com/go-utils/output"
 	"github.com/gofrontier-com/pony-express/pkg/cmd/cli/apply"
+	"github.com/gofrontier-com/pony-express/pkg/cmd/cli/plan"
 	"github.com/gofrontier-com/pony-express/pkg/cmd/cli/validate"
 	vers "github.com/gofrontier-com/pony-express/pkg/cmd/cli/version"
 	"github.com/gofrontier-com/pony-express/pkg/util/app_config"
@@ -33,6 +34,7 @@ func NewRootCmd(version string, commit string, date string) *cobra.Command {
 
 	rootCmd.AddCommand(apply.NewCmdApply())
 	rootCmd.AddCommand(validate.NewCmdValidate())
+	rootCmd.AddCommand(plan.NewCmdPlan())
 	rootCmd.AddCommand(vers.NewCmdVersion(version, commit, date))
 
 	return rootCmd
