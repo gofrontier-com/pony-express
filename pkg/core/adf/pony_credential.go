@@ -1,7 +1,6 @@
 package adf
 
 import (
-	"context"
 	"log"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
@@ -10,11 +9,7 @@ import (
 func (p *PonyCredential) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyCredential) GetDependencies() []PonyResource {
-	return nil
-}
-
-func (p *PonyCredential) getPipelineDeps([]PonyResource) error {
+func (p *PonyCredential) GetDependencies(resource []PonyResource) []PonyResource {
 	return nil
 }
 
@@ -55,13 +50,11 @@ func (p *PonyCredential) FromJSON(bytes []byte) {
 	p.Credential.UnmarshalJSON(bytes)
 }
 
-func FetchCredential(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]PonyResource, error) {
-	result := make([]PonyResource, 0)
-
-	pager := clientFactory.NewCredentialOperationsClient().NewListByFactoryPager(resourceGroup, factoryName, nil)
+func (a *PonyADF) FetchCredentials() error {
+	pager := a.clientFactory.NewCredentialOperationsClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, nil)
 
 	for pager.More() {
-		page, err := pager.NextPage(*ctx)
+		page, err := pager.NextPage(*a.ctx)
 		if err != nil {
 			log.Fatalf("failed to advance page: %v", err)
 		}
@@ -70,19 +63,9 @@ func FetchCredential(clientFactory *armdatafactory.ClientFactory, ctx *context.C
 			c := &PonyCredential{
 				Credential: v,
 			}
-			result = append(result, c)
+			a.Credential = append(a.Credential, c)
 		}
 	}
-
-	return result, nil
-}
-
-func (a *PonyADF) FetchCredentials() error {
-	c, err := FetchCredential(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
-	if err != nil {
-		return err
-	}
-	a.Credential = c
 	return nil
 }
 

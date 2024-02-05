@@ -5,11 +5,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/gofrontier-com/pony-express/pkg/core/adf"
+	coreadf "github.com/gofrontier-com/pony-express/pkg/core/adf"
 	"gopkg.in/yaml.v2"
 )
 
-func LoadConfig(configFilePath string) (*adf.PonyConfig, error) {
+func LoadConfig(configFilePath string) (*coreadf.PonyConfig, error) {
 	file, err := os.Open(configFilePath)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func LoadConfig(configFilePath string) (*adf.PonyConfig, error) {
 		return nil, err
 	}
 
-	cfg := adf.PonyConfig{}
+	cfg := coreadf.PonyConfig{}
 
 	err = yaml.Unmarshal(bytes, &cfg)
 	if err != nil {

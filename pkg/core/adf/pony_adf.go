@@ -124,3 +124,97 @@ func (a *PonyADF) Fetch() error {
 
 	return nil
 }
+
+func (a *PonyADF) processChanges(changes []*Change) {
+	for _, c := range changes {
+		switch c.Type {
+		case "pipeline":
+			processChanges(c, a.Pipeline)
+		case "dataset":
+			processChanges(c, a.Dataset)
+		case "linkedService":
+			processChanges(c, a.LinkedService)
+		case "integrationRuntime":
+			processChanges(c, a.IntegrationRuntime)
+		case "managedVirtualNetwork":
+			processChanges(c, a.ManagedVirtualNetwork)
+		case "managedPrivateEndpoint":
+			processChanges(c, a.ManagedPrivateEndpoint)
+		case "factory":
+			processChange(c, a.Factory)
+		case "trigger":
+			processChanges(c, a.Trigger)
+		case "credential":
+			processChanges(c, a.Credential)
+		default:
+			fmt.Println("Unknown change type: ", c.Type)
+		}
+	}
+}
+
+func (a *PonyADF) ProcessChanges(adfChanges map[string]interface{}) error {
+	changes, err := getJsonPatches(adfChanges)
+	if err != nil {
+		return err
+	}
+
+	a.processChanges(changes)
+	return nil
+}
+
+func (a *PonyADF) SetDeploymentConfig(config *PonyDeployConfig) {
+	setDeploymentConfig(config.Credential, a.Credential)
+
+	setDeploymentConfig(config.Pipeline, a.Pipeline)
+
+	setDeploymentConfig(config.Trigger, a.Trigger)
+
+	setDeploymentConfig(config.Dataset, a.Dataset)
+
+	setDeploymentConfig(config.IntegrationRuntime, a.IntegrationRuntime)
+
+	setDeploymentConfig(config.LinkedService, a.LinkedService)
+
+	setDeploymentConfig(config.ManagedPrivateEndpoint, a.ManagedPrivateEndpoint)
+
+	setDeploymentConfig(config.ManagedVirtualNetwork, a.ManagedVirtualNetwork)
+}
+
+func (a *PonyADF) SetTargetDeploymentConfig(config *PonyDeployConfig) {
+	setTargetDeploymentConfig(config.Credential, a.Credential)
+
+	setTargetDeploymentConfig(config.Pipeline, a.Pipeline)
+
+	setTargetDeploymentConfig(config.Trigger, a.Trigger)
+
+	setTargetDeploymentConfig(config.Dataset, a.Dataset)
+
+	setTargetDeploymentConfig(config.IntegrationRuntime, a.IntegrationRuntime)
+
+	setTargetDeploymentConfig(config.LinkedService, a.LinkedService)
+
+	setTargetDeploymentConfig(config.ManagedPrivateEndpoint, a.ManagedPrivateEndpoint)
+
+	setTargetDeploymentConfig(config.ManagedVirtualNetwork, a.ManagedVirtualNetwork)
+}
+
+func (a *PonyADF) Deps() error {
+	for _, pipeline := range a.Pipeline {
+		if pipeline.GetRequiresDeployment() {
+			pipeline.GetDependencies(a.Pipeline)
+		}
+	}
+	return nil
+}
+
+func (a *PonyADF) Diff(target *PonyADF) {
+	compareFactory(a.Factory, target.Factory)
+	compare(a.Credential, target.Credential)
+	compare(a.LinkedService, target.LinkedService)
+	compare(a.ManagedVirtualNetwork, target.ManagedVirtualNetwork)
+	compare(a.ManagedPrivateEndpoint, target.ManagedPrivateEndpoint)
+	compare(a.IntegrationRuntime, target.IntegrationRuntime)
+	compare(a.Dataset, target.Dataset)
+	compare(a.Trigger, target.Trigger)
+	compare(a.Pipeline, target.Pipeline)
+}

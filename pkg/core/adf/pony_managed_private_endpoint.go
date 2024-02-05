@@ -10,11 +10,7 @@ import (
 func (p *PonyManagedPrivateEndpoint) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyManagedPrivateEndpoint) GetDependencies() []PonyResource {
-	return nil
-}
-
-func (p *PonyManagedPrivateEndpoint) getPipelineDeps([]PonyResource) error {
+func (p *PonyManagedPrivateEndpoint) GetDependencies(resource []PonyResource) []PonyResource {
 	return nil
 }
 
@@ -93,10 +89,20 @@ func (a *PonyADF) LoadManagedPrivateEndPoint(filePath string) error {
 }
 
 func (a *PonyADF) FetchManagedPrivateEndpoint() error {
-	mpe, err := FetchManagedPrivateEndpoint(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
-	if err != nil {
-		return err
+	pager := a.clientFactory.NewManagedPrivateEndpointsClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, "default", nil)
+
+	for pager.More() {
+		page, err := pager.NextPage(*a.ctx)
+		if err != nil {
+			log.Fatalf("failed to advance page: %v", err)
+		}
+
+		for _, v := range page.Value {
+			mpe := &PonyManagedPrivateEndpoint{
+				ManagedPrivateEndpoint: v,
+			}
+			a.ManagedPrivateEndpoint = append(a.ManagedPrivateEndpoint, mpe)
+		}
 	}
-	a.ManagedPrivateEndpoint = mpe
 	return nil
 }

@@ -1,7 +1,6 @@
 package adf
 
 import (
-	"context"
 	"log"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
@@ -10,11 +9,7 @@ import (
 func (p *PonyTrigger) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyTrigger) GetDependencies() []PonyResource {
-	return nil
-}
-
-func (p *PonyTrigger) getPipelineDeps([]PonyResource) error {
+func (p *PonyTrigger) GetDependencies(resource []PonyResource) []PonyResource {
 	return nil
 }
 
@@ -55,13 +50,11 @@ func (p *PonyTrigger) FromJSON(bytes []byte) {
 	p.Trigger.UnmarshalJSON(bytes)
 }
 
-func FetchTrigger(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]PonyResource, error) {
-	result := make([]PonyResource, 0)
-
-	pager := clientFactory.NewTriggersClient().NewListByFactoryPager(resourceGroup, factoryName, nil)
+func (a *PonyADF) FetchTrigger() error {
+	pager := a.clientFactory.NewTriggersClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, nil)
 
 	for pager.More() {
-		page, err := pager.NextPage(*ctx)
+		page, err := pager.NextPage(*a.ctx)
 		if err != nil {
 			log.Fatalf("failed to advance page: %v", err)
 		}
@@ -70,19 +63,9 @@ func FetchTrigger(clientFactory *armdatafactory.ClientFactory, ctx *context.Cont
 			t := &PonyTrigger{
 				Trigger: v,
 			}
-			result = append(result, t)
+			a.Trigger = append(a.Trigger, t)
 		}
 	}
-
-	return result, nil
-}
-
-func (a *PonyADF) FetchTrigger() error {
-	t, err := FetchTrigger(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
-	if err != nil {
-		return err
-	}
-	a.Trigger = t
 	return nil
 }
 

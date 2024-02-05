@@ -1,8 +1,6 @@
 package adf
 
 import (
-	"context"
-	"errors"
 	"log"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
@@ -12,7 +10,23 @@ func (p *PonyPipeline) AddDependency(pipeline PonyResource) {
 	p.Dependencies = append(p.Dependencies, pipeline)
 }
 
-func (p *PonyPipeline) GetDependencies() []PonyResource {
+func (p *PonyPipeline) GetDependencies(pipelines []PonyResource) []PonyResource {
+	if len(p.Dependencies) > 0 {
+		return p.Dependencies
+	}
+
+	for _, activity := range p.Pipeline.Properties.Activities {
+		if *activity.GetActivity().Type == "ExecutePipeline" {
+			act := activity.(*armdatafactory.ExecutePipelineActivity)
+
+			depPipe, err := findMatchingTarget(act.TypeProperties.Pipeline.ReferenceName, pipelines)
+			if err != nil {
+				continue
+			}
+
+			p.AddDependency(depPipe)
+		}
+	}
 	return p.Dependencies
 }
 
@@ -53,42 +67,6 @@ func (p *PonyPipeline) FromJSON(bytes []byte) {
 	p.Pipeline.UnmarshalJSON(bytes)
 }
 
-func FetchPipeline(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]PonyResource, error) {
-	result := make([]PonyResource, 0)
-
-	pager := clientFactory.NewPipelinesClient().NewListByFactoryPager(resourceGroup, factoryName, nil)
-
-	for pager.More() {
-		page, err := pager.NextPage(*ctx)
-		if err != nil {
-			log.Fatalf("failed to advance page: %v", err)
-		}
-
-		for _, v := range page.Value {
-			p := &PonyPipeline{
-				Pipeline: v,
-			}
-			result = append(result, p)
-		}
-	}
-
-	return result, nil
-}
-
-func GetDependantPipelineNames(p *armdatafactory.PipelineResource) (*[]string, error) {
-	var pipelineNames []string
-	for _, a := range p.Properties.Activities {
-		if *a.GetActivity().Type == "ExecutePipeline" {
-			if act, ok := a.(*armdatafactory.ExecutePipelineActivity); ok {
-				pipelineNames = append(pipelineNames, *act.TypeProperties.Pipeline.ReferenceName)
-			} else {
-				return nil, errors.New("Not a ExecutePipelineActivity")
-			}
-		}
-	}
-	return &pipelineNames, nil
-}
-
 func (a *PonyADF) LoadPipeline(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
@@ -105,14 +83,20 @@ func (a *PonyADF) LoadPipeline(filePath string) error {
 }
 
 func (a *PonyADF) FetchPipeline() error {
-	result := make([]PonyResource, 0)
-	pipelines, err := FetchPipeline(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
-	if err != nil {
-		return err
+	pager := a.clientFactory.NewPipelinesClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, nil)
+
+	for pager.More() {
+		page, err := pager.NextPage(*a.ctx)
+		if err != nil {
+			log.Fatalf("failed to advance page: %v", err)
+		}
+
+		for _, v := range page.Value {
+			p := &PonyPipeline{
+				Pipeline: v,
+			}
+			a.Pipeline = append(a.Pipeline, p)
+		}
 	}
-	for _, p := range pipelines {
-		result = append(result, p)
-	}
-	a.Pipeline = result
 	return nil
 }

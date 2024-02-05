@@ -1,7 +1,6 @@
 package adf
 
 import (
-	"context"
 	"log"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
@@ -10,11 +9,7 @@ import (
 func (p *PonyDataset) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyDataset) GetDependencies() []PonyResource {
-	return nil
-}
-
-func (p *PonyDataset) getPipelineDeps([]PonyResource) error {
+func (p *PonyDataset) GetDependencies(resource []PonyResource) []PonyResource {
 	return nil
 }
 
@@ -55,28 +50,6 @@ func (p *PonyDataset) FromJSON(bytes []byte) {
 	p.Dataset.UnmarshalJSON(bytes)
 }
 
-func FetchDataset(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]PonyResource, error) {
-	result := make([]PonyResource, 0)
-
-	pager := clientFactory.NewDatasetsClient().NewListByFactoryPager(resourceGroup, factoryName, nil)
-
-	for pager.More() {
-		page, err := pager.NextPage(*ctx)
-		if err != nil {
-			log.Fatalf("failed to advance page: %v", err)
-		}
-
-		for _, v := range page.Value {
-			ds := &PonyDataset{
-				Dataset: v,
-			}
-			result = append(result, ds)
-		}
-	}
-
-	return result, nil
-}
-
 func (a *PonyADF) LoadDataset(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
@@ -93,10 +66,20 @@ func (a *PonyADF) LoadDataset(filePath string) error {
 }
 
 func (a *PonyADF) FetchDataset() error {
-	d, err := FetchDataset(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
-	if err != nil {
-		return err
+	pager := a.clientFactory.NewDatasetsClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, nil)
+
+	for pager.More() {
+		page, err := pager.NextPage(*a.ctx)
+		if err != nil {
+			log.Fatalf("failed to advance page: %v", err)
+		}
+
+		for _, v := range page.Value {
+			ds := &PonyDataset{
+				Dataset: v,
+			}
+			a.Dataset = append(a.Dataset, ds)
+		}
 	}
-	a.Dataset = d
 	return nil
 }

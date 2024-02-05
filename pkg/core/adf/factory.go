@@ -9,11 +9,7 @@ import (
 func (p *PonyFactory) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyFactory) GetDependencies() []PonyResource {
-	return nil
-}
-
-func (p *PonyFactory) getPipelineDeps([]PonyResource) error {
+func (p *PonyFactory) GetDependencies(resource []PonyResource) []PonyResource {
 	return nil
 }
 
