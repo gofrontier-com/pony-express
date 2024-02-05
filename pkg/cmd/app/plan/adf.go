@@ -9,210 +9,45 @@ import (
 	adfutil "github.com/gofrontier-com/pony-express/pkg/util/adf"
 )
 
-func printToPrint(header string, toPrint []string) {
+func printToPrint(header string, toPrint []string) bool {
 	if len(toPrint) > 0 {
 		output.PrintlnfInfo(header)
 		for _, i := range toPrint {
 			output.PrintfInfo(i)
 		}
 		output.PrintlnfInfo("")
+		return true
 	}
+	return false
 }
 
-func printRemovePlan(targetAdf *adf.AzureADFConfig) {
+func printResourcePlan(header string, resource []adf.PonyResource, changeType int) bool {
 	toPrint := make([]string, 0)
-	printed := false
 
-	for _, i := range targetAdf.Credential {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Credential.Name))
+	for _, r := range resource {
+		condition := r.GetRequiresDeployment() && r.GetConfiguredForDeployment()
+		if changeType != adf.Remove {
+			condition = condition && r.GetChangeType() == changeType
+		}
+		if condition {
+			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *r.GetName()))
 		}
 	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Credentials:", toPrint)
-	toPrint = nil
 
-	for _, i := range targetAdf.IntegrationRuntime {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.IntegrationRuntime.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Integration Runtimes:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.LinkedService {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.LinkedService.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Linked Services:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.ManagedPrivateEndpoint {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.ManagedPrivateEndpoint.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Managed Private Endpoints:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.ManagedVirtualNetwork {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.ManagedVirtualNetwork.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Managed Virtual Networks:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.Dataset {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Dataset.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Datasets:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.Trigger {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Trigger.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Triggers:", toPrint)
-	toPrint = nil
-
-	for _, i := range targetAdf.Pipeline {
-		if i.ConfiguredForDeployment && i.ChangeType == adf.Remove {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Pipeline.Name))
-			for _, j := range i.Dependencies {
-				toPrint = append(toPrint, fmt.Sprintf("  - %s\n", *j.Name))
-			}
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Pipelines:", toPrint)
-	toPrint = nil
-
-	if !printed {
-		output.PrintlnfInfo("(none)")
-	}
+	return printToPrint(header, toPrint)
 }
 
-func printPlan(changeType int, sourceAdf *adf.AzureADFConfig) {
-	toPrint := make([]string, 0)
+func printPlan(a *adf.AzureADFConfig, changeType int) {
 	printed := false
 
-	for _, i := range sourceAdf.Credential {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Credential.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Credentials:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.IntegrationRuntime {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.IntegrationRuntime.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Integration Runtimes:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.LinkedService {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.LinkedService.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Linked Services:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.ManagedPrivateEndpoint {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.ManagedPrivateEndpoint.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Managed Private Endpoints:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.ManagedVirtualNetwork {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.ManagedVirtualNetwork.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Managed Virtual Networks:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.Dataset {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Dataset.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Datasets:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.Trigger {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Trigger.Name))
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Triggers:", toPrint)
-	toPrint = nil
-
-	for _, i := range sourceAdf.Pipeline {
-		if i.RequiresDeployment && i.ConfiguredForDeployment && i.ChangeType == changeType {
-			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *i.Pipeline.Name))
-			for _, j := range i.Dependencies {
-				toPrint = append(toPrint, fmt.Sprintf("  - %s\n", *j.Name))
-			}
-		}
-	}
-	if !printed && len(toPrint) > 0 {
-		printed = true
-	}
-	printToPrint("Pipelines:", toPrint)
-	toPrint = nil
+	printed = printResourcePlan("Credentials:", a.Credential, changeType) || printed
+	printed = printResourcePlan("Integration Runtimes:", a.IntegrationRuntime, changeType) || printed
+	printed = printResourcePlan("Linked Services:", a.LinkedService, changeType) || printed
+	printed = printResourcePlan("Managed Private Endpoints:", a.ManagedPrivateEndpoint, changeType) || printed
+	printed = printResourcePlan("Managed Virtual Networks:", a.ManagedVirtualNetwork, changeType) || printed
+	printed = printResourcePlan("Datasets:", a.Dataset, changeType) || printed
+	printed = printResourcePlan("Triggers:", a.Trigger, changeType) || printed
+	printed = printResourcePlan("Pipeline:", a.Pipeline, changeType) || printed
 
 	if !printed {
 		output.PrintlnfInfo("(none)")
@@ -259,12 +94,13 @@ func PlanADF(adfDir string, configFile string, subscriptionid string, resourceGr
 	output.PrintlnfInfo("Pony will perform the following actions:")
 
 	output.PrintlnfInfo("\nAdd\n===\n")
-	printPlan(adf.Add, sourceAdf)
+	printPlan(sourceAdf, adf.Add)
 
 	output.PrintlnfInfo("\nUpdate\n======\n")
-	printPlan(adf.Update, sourceAdf)
+	printPlan(sourceAdf, adf.Update)
 
 	output.PrintlnfInfo("\nRemove\n======\n")
-	printRemovePlan(targetAdf)
+	printPlan(targetAdf, adf.Remove)
+
 	return nil
 }

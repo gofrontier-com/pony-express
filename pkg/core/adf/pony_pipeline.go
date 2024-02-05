@@ -8,8 +8,53 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
 )
 
-func FetchPipeline(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]*PonyPipeline, error) {
-	result := make([]*PonyPipeline, 0)
+func (p *PonyPipeline) AddDependency(pipeline PonyResource) {
+	p.Dependencies = append(p.Dependencies, pipeline)
+}
+
+func (p *PonyPipeline) GetDependencies() []PonyResource {
+	return p.Dependencies
+}
+
+func (p *PonyPipeline) SetConfiguredForDeployment(d bool) {
+	p.ConfiguredForDeployment = d
+}
+
+func (p *PonyPipeline) SetRequiresDeployment(d bool) {
+	p.RequiresDeployment = d
+}
+
+func (p *PonyPipeline) SetChangeType(ct int) {
+	p.ChangeType = ct
+}
+
+func (p *PonyPipeline) GetChangeType() int {
+	return p.ChangeType
+}
+
+func (p *PonyPipeline) GetConfiguredForDeployment() bool {
+	return p.ConfiguredForDeployment
+}
+
+func (p *PonyPipeline) GetRequiresDeployment() bool {
+	return p.RequiresDeployment
+}
+
+func (p *PonyPipeline) GetName() *string {
+	return p.Pipeline.Name
+}
+
+func (p *PonyPipeline) ToJSON() []byte {
+	bytes, _ := p.Pipeline.MarshalJSON()
+	return bytes
+}
+
+func (p *PonyPipeline) FromJSON(bytes []byte) {
+	p.Pipeline.UnmarshalJSON(bytes)
+}
+
+func FetchPipeline(clientFactory *armdatafactory.ClientFactory, ctx *context.Context, resourceGroup string, factoryName string) ([]PonyResource, error) {
+	result := make([]PonyResource, 0)
 
 	pager := clientFactory.NewPipelinesClient().NewListByFactoryPager(resourceGroup, factoryName, nil)
 
@@ -60,7 +105,7 @@ func (a *AzureADFConfig) LoadPipeline(filePath string) error {
 }
 
 func (a *AzureADFConfig) FetchPipeline() error {
-	result := make([]*PonyPipeline, 0)
+	result := make([]PonyResource, 0)
 	pipelines, err := FetchPipeline(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err

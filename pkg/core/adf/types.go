@@ -37,7 +37,7 @@ type ADFRemoteConfig struct {
 
 type PonyPipeline struct {
 	Pipeline                *armdatafactory.PipelineResource
-	Dependencies            []*armdatafactory.PipelineResource
+	Dependencies            []PonyResource
 	ConfiguredForDeployment bool
 	RequiresDeployment      bool
 	ChangeType              int
@@ -48,10 +48,6 @@ type PonyCredential struct {
 	ConfiguredForDeployment bool
 	RequiresDeployment      bool
 	ChangeType              int
-}
-
-func (p *PonyPipeline) AddDependency(pipeline *armdatafactory.PipelineResource) {
-	p.Dependencies = append(p.Dependencies, pipeline)
 }
 
 type PonyFactory struct {
@@ -106,15 +102,15 @@ type PonyTrigger struct {
 type AzureADFConfig struct {
 	clientFactory          *armdatafactory.ClientFactory
 	ctx                    *context.Context
-	Credential             []*PonyCredential
-	Dataset                []*PonyDataset
-	Factory                *PonyFactory
-	IntegrationRuntime     []*PonyIntegrationRuntime
-	LinkedService          []*PonyLinkedService
-	ManagedVirtualNetwork  []*PonyManagedVirtualNetwork
-	ManagedPrivateEndpoint []*PonyManagedPrivateEndpoint
-	Pipeline               []*PonyPipeline
-	Trigger                []*PonyTrigger
+	Credential             []PonyResource
+	Dataset                []PonyResource
+	Factory                PonyResource
+	IntegrationRuntime     []PonyResource
+	LinkedService          []PonyResource
+	ManagedVirtualNetwork  []PonyResource
+	ManagedPrivateEndpoint []PonyResource
+	Pipeline               []PonyResource
+	Trigger                []PonyResource
 	Remote                 *ADFRemoteConfig
 }
 
