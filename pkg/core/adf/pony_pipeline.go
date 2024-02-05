@@ -1,8 +1,6 @@
 package adf
 
 import (
-	"log"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
 )
 
@@ -65,38 +63,4 @@ func (p *PonyPipeline) ToJSON() []byte {
 
 func (p *PonyPipeline) FromJSON(bytes []byte) {
 	p.Pipeline.UnmarshalJSON(bytes)
-}
-
-func (a *PonyADF) LoadPipeline(filePath string) error {
-	b, err := getJsonBytes(filePath)
-	if err != nil {
-		return err
-	}
-
-	ls := &armdatafactory.PipelineResource{}
-	ls.UnmarshalJSON(b)
-	p := &PonyPipeline{
-		Pipeline: ls,
-	}
-	a.Pipeline = append(a.Pipeline, p)
-	return nil
-}
-
-func (a *PonyADF) FetchPipeline() error {
-	pager := a.clientFactory.NewPipelinesClient().NewListByFactoryPager(a.Remote.ResourceGroup, a.Remote.FactoryName, nil)
-
-	for pager.More() {
-		page, err := pager.NextPage(*a.ctx)
-		if err != nil {
-			log.Fatalf("failed to advance page: %v", err)
-		}
-
-		for _, v := range page.Value {
-			p := &PonyPipeline{
-				Pipeline: v,
-			}
-			a.Pipeline = append(a.Pipeline, p)
-		}
-	}
-	return nil
 }

@@ -13,6 +13,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// CreateClientFactory creates a new client factory for the given subscription id.
 func CreateClientFactory(subscriptionid string) (*armdatafactory.ClientFactory, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {

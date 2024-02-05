@@ -4,6 +4,7 @@ import (
 	json "github.com/json-iterator/go"
 )
 
+// Change is a struct that represents a change to an ADF resource
 type Change struct {
 	Name  string
 	Type  string
