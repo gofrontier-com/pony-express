@@ -43,7 +43,7 @@ func setTargetDeploymentConfig(config []string, resources []PonyResource) {
 	}
 }
 
-func (a *AzureADFConfig) SetDeploymentConfig(config *ADFDeployConfig) {
+func (a *PonyADF) SetDeploymentConfig(config *PonyDeployConfig) {
 	setDeploymentConfig(config.Credential, a.Credential)
 
 	setDeploymentConfig(config.Pipeline, a.Pipeline)
@@ -61,7 +61,7 @@ func (a *AzureADFConfig) SetDeploymentConfig(config *ADFDeployConfig) {
 	setDeploymentConfig(config.ManagedVirtualNetwork, a.ManagedVirtualNetwork)
 }
 
-func (a *AzureADFConfig) SetTargetDeploymentConfig(config *ADFDeployConfig) {
+func (a *PonyADF) SetTargetDeploymentConfig(config *PonyDeployConfig) {
 	setTargetDeploymentConfig(config.Credential, a.Credential)
 
 	setTargetDeploymentConfig(config.Pipeline, a.Pipeline)

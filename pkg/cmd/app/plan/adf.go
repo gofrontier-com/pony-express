@@ -37,7 +37,7 @@ func printResourcePlan(header string, resource []adf.PonyResource, changeType in
 	return printToPrint(header, toPrint)
 }
 
-func printPlan(a *adf.AzureADFConfig, changeType int) {
+func printPlan(a *adf.PonyADF, changeType int) {
 	printed := false
 
 	printed = printResourcePlan("Credentials:", a.Credential, changeType) || printed

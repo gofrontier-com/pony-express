@@ -6,18 +6,12 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
 )
 
-const (
-	Add = iota
-	Update
-	Remove
-)
-
-type AppADFConfig struct {
-	Deploy  ADFDeployConfig        `yaml:"deploy"`
+type PonyConfig struct {
+	Deploy  PonyDeployConfig       `yaml:"deploy"`
 	Changes map[string]interface{} `yaml:"changes"`
 }
 
-type ADFDeployConfig struct {
+type PonyDeployConfig struct {
 	Credential             []string `yaml:"credential"`
 	Dataset                []string `yaml:"dataset"`
 	Factory                []string `yaml:"factory"`
@@ -99,7 +93,7 @@ type PonyTrigger struct {
 	ChangeType              int
 }
 
-type AzureADFConfig struct {
+type PonyADF struct {
 	clientFactory          *armdatafactory.ClientFactory
 	ctx                    *context.Context
 	Credential             []PonyResource
@@ -112,21 +106,4 @@ type AzureADFConfig struct {
 	Pipeline               []PonyResource
 	Trigger                []PonyResource
 	Remote                 *ADFRemoteConfig
-}
-
-func NewADF(subscriptionId string, resourceGroup string, factoryName string) (*AzureADFConfig, error) {
-	clientFactory, err := CreateClientFactory(subscriptionId)
-	if err != nil {
-		return nil, err
-	}
-	ctx := context.Background()
-	return &AzureADFConfig{
-		clientFactory: clientFactory,
-		ctx:           &ctx,
-		Remote: &ADFRemoteConfig{
-			SubscriptionId: subscriptionId,
-			ResourceGroup:  resourceGroup,
-			FactoryName:    factoryName,
-		},
-	}, err
 }

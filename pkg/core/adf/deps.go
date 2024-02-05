@@ -20,7 +20,7 @@ func (p *PonyPipeline) getPipelineDeps(pipelines []PonyResource) error {
 	return nil
 }
 
-func (a *AzureADFConfig) Deps() error {
+func (a *PonyADF) Deps() error {
 	for _, pipeline := range a.Pipeline {
 		if pipeline.GetRequiresDeployment() {
 			err := pipeline.getPipelineDeps(a.Pipeline)

@@ -77,7 +77,7 @@ func FetchCredential(clientFactory *armdatafactory.ClientFactory, ctx *context.C
 	return result, nil
 }
 
-func (a *AzureADFConfig) FetchCredentials() error {
+func (a *PonyADF) FetchCredentials() error {
 	c, err := FetchCredential(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (a *AzureADFConfig) FetchCredentials() error {
 	return nil
 }
 
-func (a *AzureADFConfig) LoadCredential(filePath string) error {
+func (a *PonyADF) LoadCredential(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err

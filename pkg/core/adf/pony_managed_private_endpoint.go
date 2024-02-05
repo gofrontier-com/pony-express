@@ -77,7 +77,7 @@ func FetchManagedPrivateEndpoint(clientFactory *armdatafactory.ClientFactory, ct
 	return result, nil
 }
 
-func (a *AzureADFConfig) LoadManagedPrivateEndPoint(filePath string) error {
+func (a *PonyADF) LoadManagedPrivateEndPoint(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (a *AzureADFConfig) LoadManagedPrivateEndPoint(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchManagedPrivateEndpoint() error {
+func (a *PonyADF) FetchManagedPrivateEndpoint() error {
 	mpe, err := FetchManagedPrivateEndpoint(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err

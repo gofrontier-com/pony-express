@@ -77,7 +77,7 @@ func FetchLinkedService(clientFactory *armdatafactory.ClientFactory, ctx *contex
 	return result, nil
 }
 
-func (a *AzureADFConfig) LoadLinkedService(filePath string) error {
+func (a *PonyADF) LoadLinkedService(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (a *AzureADFConfig) LoadLinkedService(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchLinkedService() error {
+func (a *PonyADF) FetchLinkedService() error {
 	ls, err := FetchLinkedService(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err

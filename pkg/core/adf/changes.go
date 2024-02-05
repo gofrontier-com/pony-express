@@ -48,58 +48,53 @@ func getJsonPatches(adfChanges map[string]interface{}) ([]*Change, error) {
 	return changes, nil
 }
 
-func processChange(c *Change, items []PonyResource) error {
-	for _, i := range items {
-		if *i.GetName() == c.Name {
-			ij := i.ToJSON()
-			modifiedAlternative, err := jsonpatch.MergePatch(ij, []byte(c.Patch))
-			if err != nil {
-				return err
-			}
-			i.FromJSON(modifiedAlternative)
+func processChanges(c *Change, resources []PonyResource) error {
+	for _, r := range resources {
+		if *r.GetName() == c.Name {
+			processChange(c, r)
 		}
 	}
 	return nil
 }
 
-func processFactoryChange(c *Change, factory PonyResource) error {
-	fj := factory.ToJSON()
+func processChange(c *Change, resource PonyResource) error {
+	fj := resource.ToJSON()
 	modifiedAlternative, err := jsonpatch.MergePatch(fj, []byte(c.Patch))
 	if err != nil {
 		return err
 	}
-	factory.FromJSON(modifiedAlternative)
+	resource.FromJSON(modifiedAlternative)
 	return nil
 }
 
-func (a *AzureADFConfig) processChanges(changes []*Change) {
+func (a *PonyADF) processChanges(changes []*Change) {
 	for _, c := range changes {
 		switch c.Type {
 		case "pipeline":
-			processChange(c, a.Pipeline)
+			processChanges(c, a.Pipeline)
 		case "dataset":
-			processChange(c, a.Dataset)
+			processChanges(c, a.Dataset)
 		case "linkedService":
-			processChange(c, a.LinkedService)
+			processChanges(c, a.LinkedService)
 		case "integrationRuntime":
-			processChange(c, a.IntegrationRuntime)
+			processChanges(c, a.IntegrationRuntime)
 		case "managedVirtualNetwork":
-			processChange(c, a.ManagedVirtualNetwork)
+			processChanges(c, a.ManagedVirtualNetwork)
 		case "managedPrivateEndpoint":
-			processChange(c, a.ManagedPrivateEndpoint)
+			processChanges(c, a.ManagedPrivateEndpoint)
 		case "factory":
-			processFactoryChange(c, a.Factory)
+			processChange(c, a.Factory)
 		case "trigger":
-			processChange(c, a.Trigger)
+			processChanges(c, a.Trigger)
 		case "credential":
-			processChange(c, a.Credential)
+			processChanges(c, a.Credential)
 		default:
 			fmt.Println("Unknown change type: ", c.Type)
 		}
 	}
 }
 
-func (a *AzureADFConfig) ProcessChanges(adfChanges map[string]interface{}) error {
+func (a *PonyADF) ProcessChanges(adfChanges map[string]interface{}) error {
 	changes, err := getJsonPatches(adfChanges)
 	if err != nil {
 		return err

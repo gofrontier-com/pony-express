@@ -26,6 +26,7 @@ func compareFactory(source PonyResource, target PonyResource) {
 			prop := strings.Split(d, ":")[0]
 			if filterRemoteProps(prop) {
 				source.SetRequiresDeployment(true)
+				source.SetChangeType(Update)
 			}
 		}
 	}
@@ -71,7 +72,7 @@ func compare(source []PonyResource, target []PonyResource) {
 	}
 }
 
-func (a *AzureADFConfig) Diff(target *AzureADFConfig) {
+func (a *PonyADF) Diff(target *PonyADF) {
 	compareFactory(a.Factory, target.Factory)
 	compare(a.Credential, target.Credential)
 	compare(a.LinkedService, target.LinkedService)

@@ -63,7 +63,7 @@ func FetchFactory(clientFactory *armdatafactory.ClientFactory, ctx *context.Cont
 	return &PonyFactory{Factory: &res.Factory}, err
 }
 
-func (a *AzureADFConfig) FetchFactory() error {
+func (a *PonyADF) FetchFactory() error {
 	f, err := FetchFactory(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (a *AzureADFConfig) FetchFactory() error {
 	return nil
 }
 
-func (a *AzureADFConfig) LoadFactory(filePath string) error {
+func (a *PonyADF) LoadFactory(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err

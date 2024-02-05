@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func LoadConfig(configFilePath string) (*adf.AppADFConfig, error) {
+func LoadConfig(configFilePath string) (*adf.PonyConfig, error) {
 	file, err := os.Open(configFilePath)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func LoadConfig(configFilePath string) (*adf.AppADFConfig, error) {
 		return nil, err
 	}
 
-	cfg := adf.AppADFConfig{}
+	cfg := adf.PonyConfig{}
 
 	err = yaml.Unmarshal(bytes, &cfg)
 	if err != nil {
@@ -31,36 +31,4 @@ func LoadConfig(configFilePath string) (*adf.AppADFConfig, error) {
 	}
 
 	return &cfg, nil
-}
-
-func hasWildcard(strArr []string) bool {
-	for _, s := range strArr {
-		if s == "*" {
-			return true
-		}
-	}
-	return false
-}
-
-func pipelineExists(pipelineName string, pipelines []*map[string]interface{}) bool {
-	for _, pipeline := range pipelines {
-		if (*pipeline)["name"] == pipelineName {
-			return true
-		}
-	}
-	return false
-}
-
-func VerifyPipelinesToDeploy(pipelineCfg []string, pipelines []*map[string]interface{}) (bool, error) {
-	if hasWildcard(pipelineCfg) {
-		return true, nil
-	}
-
-	for _, p := range pipelineCfg {
-		if !pipelineExists(p, pipelines) {
-			return false, fmt.Errorf("Pipeline '%s' is requested for deployment but does not exist", p)
-		}
-	}
-
-	return true, nil
 }

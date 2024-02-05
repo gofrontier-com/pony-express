@@ -89,7 +89,7 @@ func GetDependantPipelineNames(p *armdatafactory.PipelineResource) (*[]string, e
 	return &pipelineNames, nil
 }
 
-func (a *AzureADFConfig) LoadPipeline(filePath string) error {
+func (a *PonyADF) LoadPipeline(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (a *AzureADFConfig) LoadPipeline(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchPipeline() error {
+func (a *PonyADF) FetchPipeline() error {
 	result := make([]PonyResource, 0)
 	pipelines, err := FetchPipeline(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 	"github.com/gofrontier-com/pony-express/pkg/core/adf"
 )
 
-func LoadMap(configDir string, subscriptionId string, resourceGroup string, factoryName string) (*adf.AzureADFConfig, error) {
+func LoadMap(configDir string, subscriptionId string, resourceGroup string, factoryName string) (*adf.PonyADF, error) {
 	configurationData, err := adf.NewADF(subscriptionId, resourceGroup, factoryName)
 
 	err = filepath.Walk(configDir, func(path string, f os.FileInfo, err error) error {

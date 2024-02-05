@@ -77,7 +77,7 @@ func FetchIntegrationRuntime(clientFactory *armdatafactory.ClientFactory, ctx *c
 	return result, nil
 }
 
-func (a *AzureADFConfig) LoadIntegrationRuntime(filePath string) error {
+func (a *PonyADF) LoadIntegrationRuntime(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (a *AzureADFConfig) LoadIntegrationRuntime(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchIntegrationRuntime() error {
+func (a *PonyADF) FetchIntegrationRuntime() error {
 	ir, err := FetchIntegrationRuntime(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err

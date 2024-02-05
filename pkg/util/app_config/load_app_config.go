@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func LoadAppConfig() (appConfig *adf.AppADFConfig, err error) {
+func LoadAppConfig() (appConfig *adf.PonyConfig, err error) {
 	viper.SetEnvPrefix("pony")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()

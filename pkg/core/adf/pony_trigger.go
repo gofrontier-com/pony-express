@@ -77,7 +77,7 @@ func FetchTrigger(clientFactory *armdatafactory.ClientFactory, ctx *context.Cont
 	return result, nil
 }
 
-func (a *AzureADFConfig) FetchTrigger() error {
+func (a *PonyADF) FetchTrigger() error {
 	t, err := FetchTrigger(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (a *AzureADFConfig) FetchTrigger() error {
 	return nil
 }
 
-func (a *AzureADFConfig) LoadTrigger(filePath string) error {
+func (a *PonyADF) LoadTrigger(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err

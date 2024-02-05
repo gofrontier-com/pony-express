@@ -76,7 +76,7 @@ func FetchManagedVirtualNetwork(clientFactory *armdatafactory.ClientFactory, ctx
 	return result, nil
 }
 
-func (a *AzureADFConfig) LoadManagedVirtualNetwork(filePath string) error {
+func (a *PonyADF) LoadManagedVirtualNetwork(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -91,7 +91,7 @@ func (a *AzureADFConfig) LoadManagedVirtualNetwork(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchManagedVirtualNetwork() error {
+func (a *PonyADF) FetchManagedVirtualNetwork() error {
 	mvn, err := FetchManagedVirtualNetwork(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err

@@ -77,7 +77,7 @@ func FetchDataset(clientFactory *armdatafactory.ClientFactory, ctx *context.Cont
 	return result, nil
 }
 
-func (a *AzureADFConfig) LoadDataset(filePath string) error {
+func (a *PonyADF) LoadDataset(filePath string) error {
 	b, err := getJsonBytes(filePath)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (a *AzureADFConfig) LoadDataset(filePath string) error {
 	return nil
 }
 
-func (a *AzureADFConfig) FetchDataset() error {
+func (a *PonyADF) FetchDataset() error {
 	d, err := FetchDataset(a.clientFactory, a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName)
 	if err != nil {
 		return err
