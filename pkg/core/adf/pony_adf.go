@@ -208,8 +208,13 @@ func (a *PonyADF) Diff(target *PonyADF) {
 	compareFactory(a.Factory, target.Factory)
 	compare(a.Credential, target.Credential, "Credential")
 	compare(a.LinkedService, target.LinkedService, "LinkedService")
-	compare(a.ManagedVirtualNetwork, target.ManagedVirtualNetwork, "ManagedVirtualNetwork", "ManagedVirtualNetwork.Properties")
-	compare(a.ManagedPrivateEndpoint, target.ManagedPrivateEndpoint, "ManagedPrivateEndpoint", "ManagedPrivateEndpoint.Properties.AdditionalProperties", "ManagedPrivateEndpoint.Properties.ConnectionState", "ManagedPrivateEndpoint.Properties.Fqdns", "ManagedPrivateEndpoint.Properties.ProvisioningState")
+	compare(a.ManagedVirtualNetwork, target.ManagedVirtualNetwork, "ManagedVirtualNetwork",
+		"ManagedVirtualNetwork.Properties")
+	compare(a.ManagedPrivateEndpoint, target.ManagedPrivateEndpoint, "ManagedPrivateEndpoint",
+		"ManagedPrivateEndpoint.Properties.AdditionalProperties",
+		"ManagedPrivateEndpoint.Properties.ConnectionState",
+		"ManagedPrivateEndpoint.Properties.Fqdns",
+		"ManagedPrivateEndpoint.Properties.ProvisioningState")
 	compare(a.IntegrationRuntime, target.IntegrationRuntime, "IntegrationRuntime")
 	compare(a.Dataset, target.Dataset, "Dataset")
 	compare(a.Trigger, target.Trigger, "Trigger")

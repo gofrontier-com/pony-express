@@ -129,7 +129,13 @@ func processChange(c *Change, resource PonyResource) error {
 }
 
 func filterRemoteProps(prop string, prefix string, extraProps ...string) bool {
-	props := []string{fmt.Sprintf("%s.Etag", prefix), fmt.Sprintf("%s.ID", prefix), fmt.Sprintf("%s.Type", prefix), "ConfiguredForDeployment", "RequiresDeployment", "ChangeType"}
+	props := []string{
+		fmt.Sprintf("%s.Etag", prefix),
+		fmt.Sprintf("%s.ID", prefix),
+		fmt.Sprintf("%s.Type", prefix),
+		"ConfiguredForDeployment",
+		"RequiresDeployment",
+		"ChangeType"}
 	if extraProps != nil {
 		props = append(props, extraProps...)
 	}
