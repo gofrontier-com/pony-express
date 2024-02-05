@@ -128,8 +128,8 @@ func processChange(c *Change, resource PonyResource) error {
 	return nil
 }
 
-func filterRemoteProps(prop string, extraProps ...string) bool {
-	props := []string{"Etag", "ID", "Type", "ConfiguredForDeployment", "RequiresDeployment", "ChangeType"}
+func filterRemoteProps(prop string, prefix string, extraProps ...string) bool {
+	props := []string{fmt.Sprintf("%s.Etag", prefix), fmt.Sprintf("%s.ID", prefix), fmt.Sprintf("%s.Type", prefix), "ConfiguredForDeployment", "RequiresDeployment", "ChangeType"}
 	if extraProps != nil {
 		props = append(props, extraProps...)
 	}
@@ -145,7 +145,7 @@ func compareFactory(source PonyResource, target PonyResource) {
 	if diff := deep.Equal(source, target); diff != nil {
 		for _, d := range diff {
 			prop := strings.Split(d, ":")[0]
-			if filterRemoteProps(prop) {
+			if filterRemoteProps(prop, "Factory") {
 				source.SetRequiresDeployment(true)
 				source.SetChangeType(Update)
 			}
@@ -163,7 +163,7 @@ func findMatchingTarget(sourceName *string, target []PonyResource) (PonyResource
 	return nil, fmt.Errorf("no matching target found for %s", *sourceName)
 }
 
-func compare(source []PonyResource, target []PonyResource) {
+func compare(source []PonyResource, target []PonyResource, prefix string, additionalProps ...string) {
 	for _, s := range source {
 		s.SetRequiresDeployment(false)
 		t, err := findMatchingTarget(s.GetName(), target)
@@ -176,7 +176,7 @@ func compare(source []PonyResource, target []PonyResource) {
 		if diff := deep.Equal(s, t); diff != nil {
 			for _, d := range diff {
 				prop := strings.Split(d, ":")[0]
-				if filterRemoteProps(prop) {
+				if filterRemoteProps(prop, prefix, additionalProps...) {
 					s.SetRequiresDeployment(true)
 					s.SetChangeType(Update)
 				}

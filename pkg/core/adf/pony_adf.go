@@ -206,14 +206,14 @@ func (a *PonyADF) Deps() error {
 // Diff compares two PonyADF objects.
 func (a *PonyADF) Diff(target *PonyADF) {
 	compareFactory(a.Factory, target.Factory)
-	compare(a.Credential, target.Credential)
-	compare(a.LinkedService, target.LinkedService)
-	compare(a.ManagedVirtualNetwork, target.ManagedVirtualNetwork)
-	compare(a.ManagedPrivateEndpoint, target.ManagedPrivateEndpoint)
-	compare(a.IntegrationRuntime, target.IntegrationRuntime)
-	compare(a.Dataset, target.Dataset)
-	compare(a.Trigger, target.Trigger)
-	compare(a.Pipeline, target.Pipeline)
+	compare(a.Credential, target.Credential, "Credential")
+	compare(a.LinkedService, target.LinkedService, "LinkedService")
+	compare(a.ManagedVirtualNetwork, target.ManagedVirtualNetwork, "ManagedVirtualNetwork", "ManagedVirtualNetwork.Properties")
+	compare(a.ManagedPrivateEndpoint, target.ManagedPrivateEndpoint, "ManagedPrivateEndpoint", "ManagedPrivateEndpoint.Properties.AdditionalProperties", "ManagedPrivateEndpoint.Properties.ConnectionState", "ManagedPrivateEndpoint.Properties.Fqdns", "ManagedPrivateEndpoint.Properties.ProvisioningState")
+	compare(a.IntegrationRuntime, target.IntegrationRuntime, "IntegrationRuntime")
+	compare(a.Dataset, target.Dataset, "Dataset")
+	compare(a.Trigger, target.Trigger, "Trigger")
+	compare(a.Pipeline, target.Pipeline, "Pipeline")
 }
 
 // FetchCredentials fetches the credentials from the remote ADF.
