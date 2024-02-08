@@ -147,11 +147,11 @@ func filterRemoteProps(prop string, prefix string, extraProps ...string) bool {
 	return true
 }
 
-func compareFactory(source PonyResource, target PonyResource) {
+func compareFactory(source PonyResource, target PonyResource, additionalProps ...string) {
 	if diff := deep.Equal(source, target); diff != nil {
 		for _, d := range diff {
 			prop := strings.Split(d, ":")[0]
-			if filterRemoteProps(prop, "Factory") {
+			if filterRemoteProps(prop, "Factory", additionalProps...) {
 				source.SetRequiresDeployment(true)
 				source.SetChangeType(Update)
 			}

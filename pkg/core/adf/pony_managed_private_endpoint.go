@@ -3,7 +3,15 @@ package adf
 func (p *PonyManagedPrivateEndpoint) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyManagedPrivateEndpoint) GetDependencies(resource []PonyResource) []PonyResource {
+func (p *PonyManagedPrivateEndpoint) Base() interface{} {
+	return p.ManagedPrivateEndpoint
+}
+
+func (p *PonyManagedPrivateEndpoint) CheckDependencies() bool {
+	return true
+}
+
+func (p *PonyManagedPrivateEndpoint) GetDependencies(resource ...[]PonyResource) []PonyResource {
 	return nil
 }
 

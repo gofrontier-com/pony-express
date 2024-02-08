@@ -2,15 +2,18 @@ package apply
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/gofrontier-com/pony-express/pkg/cmd/app/apply"
 	"github.com/spf13/cobra"
 )
 
 var (
-	configDir      string
-	dryRun         bool
+	adfDir         string
+	configFilePath string
 	subscriptionId string
+	resourceGroup  string
+	factoryName    string
 )
 
 // NewCmdApplyAzureRm creates a command to apply the Azure RM config
@@ -19,7 +22,7 @@ func NewCmdApplyADF() *cobra.Command {
 		Use:   "adf",
 		Short: "Apply Azure Data Factory",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			if err := apply.ApplyADF(configDir, subscriptionId, dryRun); err != nil {
+			if err := apply.ApplyADF(adfDir, configFilePath, subscriptionId, resourceGroup, factoryName); err != nil {
 				return err
 			}
 
@@ -32,11 +35,11 @@ func NewCmdApplyADF() *cobra.Command {
 		panic(err)
 	}
 
-	cmd.Flags().StringVarP(&configDir, "config-dir", "c", wd, "Config directory")
-	cmd.Flags().BoolVarP(&dryRun, "dry-run", "d", false, "Dry-run")
-	cmd.Flags().StringVarP(&subscriptionId, "subscription-id", "s", "", "Subscription Id") // TODO: Support name
-
-	cobra.MarkFlagRequired(cmd.Flags(), "subscription-id")
+	cmd.Flags().StringVarP(&adfDir, "adf-dir", "a", wd, "ADF source directory")
+	cmd.Flags().StringVarP(&configFilePath, "config", "c", filepath.Join(wd, "config.yaml"), "Config file")
+	cmd.Flags().StringVarP(&subscriptionId, "subscription-id", "s", "", "Subscription ID")
+	cmd.Flags().StringVarP(&resourceGroup, "resource-group", "g", "", "Resource group")
+	cmd.Flags().StringVarP(&factoryName, "adf-name", "n", "", "ADF name")
 
 	return cmd
 }

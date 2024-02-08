@@ -1,10 +1,43 @@
 package adf
 
+import (
+	"fmt"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
+)
+
 func (p *PonyTrigger) AddDependency(pipeline PonyResource) {
+	p.Dependencies = append(p.Dependencies, pipeline)
 }
 
-func (p *PonyTrigger) GetDependencies(resource []PonyResource) []PonyResource {
-	return nil
+func (p *PonyTrigger) Base() interface{} {
+	return p.Trigger
+}
+
+func (p *PonyTrigger) CheckDependencies() bool {
+	if !p.ConfiguredForDeployment {
+		return true
+	}
+
+	for _, dep := range p.Dependencies {
+		if !dep.GetConfiguredForDeployment() {
+			fmt.Println("Trigger ", *p.GetName(), " has a dependency that is not configured for deployment: ", *dep.GetName())
+			return false
+		}
+	}
+	return true
+}
+
+func (p *PonyTrigger) GetDependencies(resource ...[]PonyResource) []PonyResource {
+	depPipes := p.Trigger.Properties.(*armdatafactory.ScheduleTrigger).Pipelines
+	for _, depPipe := range depPipes {
+		for _, pipeline := range resource[0] {
+			if *pipeline.GetName() == *depPipe.PipelineReference.ReferenceName {
+				p.AddDependency(pipeline)
+			}
+		}
+	}
+	return p.Dependencies
 }
 
 func (p *PonyTrigger) SetConfiguredForDeployment(d bool) {

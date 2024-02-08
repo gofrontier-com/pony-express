@@ -3,7 +3,15 @@ package adf
 func (p *PonyManagedVirtualNetwork) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyManagedVirtualNetwork) GetDependencies(resource []PonyResource) []PonyResource {
+func (p *PonyManagedVirtualNetwork) Base() interface{} {
+	return p.ManagedVirtualNetwork
+}
+
+func (p *PonyManagedVirtualNetwork) CheckDependencies() bool {
+	return true
+}
+
+func (p *PonyManagedVirtualNetwork) GetDependencies(resource ...[]PonyResource) []PonyResource {
 	return nil
 }
 

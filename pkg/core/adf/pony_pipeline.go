@@ -1,6 +1,8 @@
 package adf
 
 import (
+	"fmt"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v4"
 )
 
@@ -8,7 +10,26 @@ func (p *PonyPipeline) AddDependency(pipeline PonyResource) {
 	p.Dependencies = append(p.Dependencies, pipeline)
 }
 
-func (p *PonyPipeline) GetDependencies(pipelines []PonyResource) []PonyResource {
+func (p *PonyPipeline) Base() interface{} {
+	return p.Pipeline
+}
+
+func (p *PonyPipeline) CheckDependencies() bool {
+	if !p.ConfiguredForDeployment {
+		return true
+	}
+
+	for _, dep := range p.Dependencies {
+		if !dep.GetConfiguredForDeployment() {
+			fmt.Println("Pipeline ", *p.GetName(), " has a dependency that is not configured for deployment: ", *dep.GetName())
+			return false
+		}
+	}
+
+	return true
+}
+
+func (p *PonyPipeline) GetDependencies(pipelines ...[]PonyResource) []PonyResource {
 	if len(p.Dependencies) > 0 {
 		return p.Dependencies
 	}
@@ -17,7 +38,7 @@ func (p *PonyPipeline) GetDependencies(pipelines []PonyResource) []PonyResource 
 		if *activity.GetActivity().Type == "ExecutePipeline" {
 			act := activity.(*armdatafactory.ExecutePipelineActivity)
 
-			depPipe, err := findMatchingTarget(act.TypeProperties.Pipeline.ReferenceName, pipelines)
+			depPipe, err := findMatchingTarget(act.TypeProperties.Pipeline.ReferenceName, pipelines[0])
 			if err != nil {
 				continue
 			}

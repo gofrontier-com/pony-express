@@ -2,9 +2,11 @@ package adf
 
 // PonyResource is an interface for all ADF resources
 type PonyResource interface {
+	Base() interface{}
+	CheckDependencies() bool
 	GetChangeType() int
 	GetConfiguredForDeployment() bool
-	GetDependencies([]PonyResource) []PonyResource
+	GetDependencies(...[]PonyResource) []PonyResource
 	GetName() *string
 	GetRequiresDeployment() bool
 	SetChangeType(int)

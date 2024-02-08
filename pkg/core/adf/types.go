@@ -60,6 +60,7 @@ type PonyFactory struct {
 // PonyDataset is a struct that represents an ADF dataset.
 type PonyDataset struct {
 	Dataset                 *armdatafactory.DatasetResource
+	Dependencies            []PonyResource
 	RequiresDeployment      bool
 	ConfiguredForDeployment bool
 	ChangeType              int
@@ -76,6 +77,7 @@ type PonyIntegrationRuntime struct {
 // PonyLinkedService is a struct that represents an ADF linked service.
 type PonyLinkedService struct {
 	LinkedService           *armdatafactory.LinkedServiceResource
+	Dependencies            []PonyResource
 	RequiresDeployment      bool
 	ConfiguredForDeployment bool
 	ChangeType              int
@@ -100,6 +102,7 @@ type PonyManagedPrivateEndpoint struct {
 // PonyTrigger is a struct that represents an ADF trigger.
 type PonyTrigger struct {
 	Trigger                 *armdatafactory.TriggerResource
+	Dependencies            []PonyResource
 	RequiresDeployment      bool
 	ConfiguredForDeployment bool
 	ChangeType              int

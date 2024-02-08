@@ -2,7 +2,6 @@ package plan
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gofrontier-com/go-utils/output"
@@ -55,24 +54,6 @@ func printPlan(a *adf.PonyADF, changeType int) {
 	}
 }
 
-func doSource(wg *sync.WaitGroup, sourceAdf *adf.PonyADF, cfg *adf.PonyConfig, adfDir string) {
-	defer wg.Done()
-
-	sourceAdf.LoadFromFolder(adfDir)
-
-	sourceAdf.ProcessChanges(cfg.Changes)
-
-	sourceAdf.SetDeploymentConfig(&cfg.Deploy)
-}
-
-func doTarget(wg *sync.WaitGroup, targetAdf *adf.PonyADF, cfg *adf.PonyConfig) {
-	defer wg.Done()
-
-	targetAdf.Fetch()
-
-	targetAdf.SetTargetDeploymentConfig(&cfg.Deploy)
-}
-
 func PlanADF(adfDir string, configFile string, subscriptionid string, resourceGroup string, factoryName string) error {
 	myFigure := figure.NewFigure("Pony Express", "doom", true)
 	myFigure.Print()
@@ -88,21 +69,22 @@ func PlanADF(adfDir string, configFile string, subscriptionid string, resourceGr
 	sourceAdf := adf.NewADF()
 	targetAdf, _ := adf.NewRemoteADF(subscriptionid, resourceGroup, factoryName)
 
-	var wg sync.WaitGroup
+	sourceAdf.LoadFromFolder(adfDir)
 
-	wg.Add(2)
+	sourceAdf.ProcessChanges(cfg.Changes)
 
-	go doSource(&wg, sourceAdf, cfg, adfDir)
-	go doTarget(&wg, targetAdf, cfg)
+	sourceAdf.SetDeploymentConfig(&cfg.Deploy)
 
-	wg.Wait()
-
-	sourceAdf.Diff(targetAdf)
-
-	err = sourceAdf.Deps()
-	if err != nil {
+	depsSatisfied := sourceAdf.Deps()
+	if depsSatisfied == false {
 		return err
 	}
+
+	targetAdf.Fetch()
+
+	targetAdf.SetTargetDeploymentConfig(&cfg.Deploy)
+
+	sourceAdf.Diff(targetAdf)
 
 	output.PrintlnfInfo("Pony is ready to go!")
 

@@ -3,7 +3,15 @@ package adf
 func (p *PonyCredential) AddDependency(pipeline PonyResource) {
 }
 
-func (p *PonyCredential) GetDependencies(resource []PonyResource) []PonyResource {
+func (p *PonyCredential) Base() interface{} {
+	return p.Credential
+}
+
+func (p *PonyCredential) CheckDependencies() bool {
+	return true
+}
+
+func (p *PonyCredential) GetDependencies(resource ...[]PonyResource) []PonyResource {
 	return nil
 }
 
