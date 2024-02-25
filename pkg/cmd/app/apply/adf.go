@@ -30,6 +30,9 @@ func printResourcePlan(header string, resource []adf.PonyResource, changeType in
 		if changeType != adf.Remove {
 			condition = condition && r.GetChangeType() == changeType
 		}
+		if changeType == adf.Remove {
+			condition = r.GetChangeType() == changeType
+		}
 		if condition {
 			toPrint = append(toPrint, fmt.Sprintf("- %s\n", *r.GetName()))
 		}
@@ -45,7 +48,7 @@ func printPlan(a *adf.PonyADF, changeType int) {
 	printed = printResourcePlan("Integration Runtimes:", a.IntegrationRuntime, changeType) || printed
 	printed = printResourcePlan("Linked Services:", a.LinkedService, changeType) || printed
 	printed = printResourcePlan("Managed Private Endpoints:", a.ManagedPrivateEndpoint, changeType) || printed
-	printed = printResourcePlan("Managed Virtual Networks:", a.ManagedVirtualNetwork, changeType) || printed
+	// printed = printResourcePlan("Managed Virtual Networks:", a.ManagedVirtualNetwork, changeType) || printed
 	printed = printResourcePlan("Datasets:", a.Dataset, changeType) || printed
 	printed = printResourcePlan("Triggers:", a.Trigger, changeType) || printed
 	printed = printResourcePlan("Pipeline:", a.Pipeline, changeType) || printed
@@ -57,43 +60,43 @@ func printPlan(a *adf.PonyADF, changeType int) {
 
 func applyRemovals(targetAdf *adf.PonyADF) {
 	for _, r := range targetAdf.Trigger {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveTrigger(r)
 		}
 	}
 
 	for _, r := range targetAdf.Pipeline {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemovePipeline(r)
 		}
 	}
 
 	for _, r := range targetAdf.Dataset {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveDataset(r)
 		}
 	}
 
 	for _, r := range targetAdf.LinkedService {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveLinkedService(r)
 		}
 	}
 
 	for _, r := range targetAdf.Credential {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveCredential(r)
 		}
 	}
 
 	for _, r := range targetAdf.IntegrationRuntime {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveIntegrationRuntime(r)
 		}
 	}
 
 	for _, r := range targetAdf.ManagedPrivateEndpoint {
-		if r.GetChangeType() == adf.Remove && r.GetRequiresDeployment() {
+		if r.GetChangeType() == adf.Remove {
 			targetAdf.RemoveManagedPrivateEndpoint(r)
 		}
 	}

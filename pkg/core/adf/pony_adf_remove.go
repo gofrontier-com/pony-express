@@ -5,8 +5,8 @@ import (
 )
 
 func (a *PonyADF) RemoveCredential(p PonyResource) error {
-	// _, err := a.clientFactory.NewCredentialOperationsClient().Delete(*a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName, *p.GetName(), nil)
-	// return err
+	_, err := a.clientFactory.NewCredentialOperationsClient().Delete(*a.ctx, a.Remote.ResourceGroup, a.Remote.FactoryName, *p.GetName(), nil)
+	return err
 	fmt.Printf("Removing credential %s from RG %s and factory %s\n", *p.GetName(), a.Remote.ResourceGroup, a.Remote.FactoryName)
 	return nil
 }
